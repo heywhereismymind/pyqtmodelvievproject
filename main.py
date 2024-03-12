@@ -17,3 +17,29 @@ job VARCHAR(50),
 email VARCHAR(40) NOT NULL)
 """)
 print(con.tables())
+
+# Creating a query for later execution using .prepare()
+insertDataQuery = QSqlQuery()
+insertDataQuery.prepare(
+"""
+INSERT INTO contacts (
+name,
+job,
+email
+)
+VALUES (?, ?, ?)
+"""
+)
+# Sample data
+data = [
+("Петя", "Senior Web Developer", "petya@example.com"),
+("Лера", "Project Manager", "lera@example.com"),
+("Денис", "Data Analyst", "denis@example.com"),
+("Катя", "Senior Python Developer", "ket@example.com"),
+]
+# Use .addBindValue() to insert data
+for name, job, email in data:
+    insertDataQuery.addBindValue(name)
+    insertDataQuery.addBindValue(job)
+    insertDataQuery.addBindValue(email)
+    insertDataQuery.exec()
