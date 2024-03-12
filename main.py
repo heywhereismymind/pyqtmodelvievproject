@@ -21,6 +21,7 @@ class Contacts(QMainWindow):
         self.model.setHeaderData(3, Qt.Horizontal, "Email")
         self.model.select()
 
+
         # Set up the view
         self.view = QTableView()
         self.view.setModel(self.model)
