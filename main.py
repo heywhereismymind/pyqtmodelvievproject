@@ -5,10 +5,12 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QTableView
 
 
 class Contacts(QMainWindow):
+    """Create SQL table for contacts."""
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("QTableView Example")
         self.resize(415, 200)
+
         # Set up the model
         self.model = QSqlTableModel(self)
         self.model.setTable("contacts")
@@ -18,6 +20,7 @@ class Contacts(QMainWindow):
         self.model.setHeaderData(2, Qt.Horizontal, "Job")
         self.model.setHeaderData(3, Qt.Horizontal, "Email")
         self.model.select()
+
         # Set up the view
         self.view = QTableView()
         self.view.setModel(self.model)
@@ -26,21 +29,25 @@ class Contacts(QMainWindow):
 
 
 def create_connection() -> bool:
+    """Creates the database connection to the SQLite database."""
     con = QSqlDatabase.addDatabase("QSQLITE")
     con.setDatabaseName("contacts.sqlite")
     if not con.open():
-        QMessageBox.critical(
-        None,
-        "QTableView Example - Error!",
-        "Database Error: %s" % con.lastError().databaseText(),
-        )
+        QMessageBox.critical(None,
+                             "QTableView Example - Error!",
+                             f"Database Error: {con.lastError().databaseText()}")
         return False
     return True
 
 
-app = QApplication(sys.argv)
-if not create_connection():
-    sys.exit(1)
-win = Contacts()
-win.show()
-sys.exit(app.exec_())
+def main():
+    app = QApplication(sys.argv)
+    if not create_connection():
+        sys.exit(1)
+    win = Contacts()
+    win.show()
+    sys.exit(app.exec_())
+
+
+if __name__ == "__main__":
+    main()
