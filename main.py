@@ -1,33 +1,28 @@
 import sys
-from PyQt5.QtSql import QSqlDatabase, QSqlQuery
-from PyQt5.QtWidgets import (
-                            QApplication,
-                            QMainWindow,
-                            QMessageBox,
-                            QTableWidget,
-                            QTableWidgetItem,
-                            )
+from PyQt5.QtCore import Qt
+from PyQt5.QtSql import QSqlDatabase, QSqlTableModel
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QTableView
 
 
 class Contacts(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("QTableView Example")
-        self.resize(450, 250)
-        # Set up the view and load the data
-        self.view = QTableWidget()
-        self.view.setColumnCount(4)
-        self.view.setHorizontalHeaderLabels(["ID", "Name", "Job", "Email"])
-        query = QSqlQuery("SELECT id, name, job, email FROM contacts")
-        while query.next():
-            rows = self.view.rowCount()
-            self.view.setRowCount(rows + 1)
-            self.view.setItem(rows, 0, QTableWidgetItem(str(query.value(0))))
-            self.view.setItem(rows, 1, QTableWidgetItem(query.value(1)))
-            self.view.setItem(rows, 2, QTableWidgetItem(query.value(2)))
-            self.view.setItem(rows, 3, QTableWidgetItem(query.value(3)))
-            self.view.resizeColumnsToContents()
-            self.setCentralWidget(self.view)
+        self.resize(415, 200)
+        # Set up the model
+        self.model = QSqlTableModel(self)
+        self.model.setTable("contacts")
+        self.model.setEditStrategy(QSqlTableModel.OnFieldChange)
+        self.model.setHeaderData(0, Qt.Horizontal, "ID")
+        self.model.setHeaderData(1, Qt.Horizontal, "Name")
+        self.model.setHeaderData(2, Qt.Horizontal, "Job")
+        self.model.setHeaderData(3, Qt.Horizontal, "Email")
+        self.model.select()
+        # Set up the view
+        self.view = QTableView()
+        self.view.setModel(self.model)
+        self.view.resizeColumnsToContents()
+        self.setCentralWidget(self.view)
 
 
 def create_connection() -> bool:
